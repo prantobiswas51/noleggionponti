@@ -1,6 +1,11 @@
 <x-app-layout>
 
-    <div class="max-w-4xl mx-4 p-6 lg:p-10 bg-gray-100 border-2 border-black shadow-xl rounded-2xl my-10 space-y-10">
+    <div class="p-4 bg-gray-200 mx-4 mt-6 rounded-lg lg:mx-auto">
+        <p class=" font-medium">Your Balance</p>
+        <p class="text-2xl font-bold text-green-500">€ {{ Auth::user()->balance }}</p>
+    </div>
+
+    <div class="max-w-4xl mx-4 lg:mx-auto p-6 lg:p-10 bg-gray-100 border-2 border-black shadow-xl rounded-2xl my-10 space-y-10">
 
         <!-- QR Scanner Section -->
         <section class="text-center">
