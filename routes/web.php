@@ -36,23 +36,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/deposit/payeer/success', [DepositController::class, 'success'])->name('payeer_success');
 });
 
-Route::get('/device-status/{identifier}', function ($identifier) {
-    $device = \App\Models\Esp32Device::where('identifier', $identifier)->first();
-
-    if (!$device) {
-        return response()->json(['has_enough' => false]);
-    }
-
-    $session = $device->sessions()
-        ->where('active', true)
-        ->where('expires_at', '>', now())
-        ->latest()
-        ->first();
-
-    return response()->json([
-        'has_enough' => $session ? true : false
-    ]);
-});
-
 
 require __DIR__ . '/auth.php';
