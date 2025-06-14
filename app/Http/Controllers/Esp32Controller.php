@@ -14,4 +14,13 @@ class Esp32Controller extends Controller
         return view('esp32_223');
     }
 
+    public function hasEnough(Request $request, $amount)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'has_enough' => $user->balance >= $amount,
+        ]);
+    }
+
 }
