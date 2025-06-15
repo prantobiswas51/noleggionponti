@@ -17,18 +17,18 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         Esp32Device::create([
-            'name' => 'Device 2',
-            'identifier' => 'XXX123',
-        ]);
-
-        Esp32Device::create([
             'name' => 'Device 1',
             'identifier' => 'ABC123',
         ]);
 
         Esp32Device::create([
+            'name' => 'Device 2',
+            'identifier' => 'JKL223',
+        ]);
+
+        Esp32Device::create([
             'name' => 'Device 3',
-            'identifier' => 'ABCDD123',
+            'identifier' => 'XYZ333',
         ]);
     }
 }
