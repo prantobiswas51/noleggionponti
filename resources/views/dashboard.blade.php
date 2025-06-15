@@ -10,6 +10,10 @@
         </div>
     </div>
 
+    <div class=" p-2 max-w-4xl ">
+        <a class="bg-sky-400" href="/device-session?device=ABC123">Device 1</a>
+    </div>
+
     <div class="max-w-4xl mx-4 lg:mx-auto p-6 lg:p-10 bg-gray-100 border-2 border-black shadow-xl rounded-2xl my-10 space-y-10">
 
         <!-- QR Scanner Section -->

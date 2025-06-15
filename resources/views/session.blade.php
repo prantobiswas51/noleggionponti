@@ -5,9 +5,9 @@
         <p style="color: green">{{ session('success') }}</p>
     @endif
 
-    <form method="POST" action="{{ url('/device-session/start') }}">
+    <form method="POST" action="{{ route('start_devices') }}">
         @csrf
         <input type="hidden" name="device" value="{{ $device->identifier }}">
-        <button type="submit">Start 30 Minute Session</button>
+        <button type="submit" class="px-4 py-2 bg-blue-400 rounded-lg text-white">Start 30 Minute Session</button>
     </form>
 </x-app-layout>

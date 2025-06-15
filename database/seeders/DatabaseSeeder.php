@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Esp32Device;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,9 +16,19 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        Esp32Device::create([
+            'name' => 'Device 2',
+            'identifier' => 'XXX123',
+        ]);
+
+        Esp32Device::create([
+            'name' => 'Device 1',
+            'identifier' => 'ABC123',
+        ]);
+
+        Esp32Device::create([
+            'name' => 'Device 3',
+            'identifier' => 'ABCDD123',
         ]);
     }
 }

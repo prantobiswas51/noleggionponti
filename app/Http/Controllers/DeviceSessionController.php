@@ -26,10 +26,10 @@ class DeviceSessionController extends Controller
         Esp32Session::create([
             'esp32_device_id' => $device->id,
             'started_at' => now(),
-            'expires_at' => now()->addMinutes(30),
+            'expires_at' => now()->addMinutes(5),
             'active' => true,
         ]);
 
-        return redirect()->back()->with('success', 'Session started for 30 minutes!');
+        return redirect()->back()->with('success', 'Session started for 5 minutes!');
     }
 }
