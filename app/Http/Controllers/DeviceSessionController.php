@@ -31,8 +31,8 @@ class DeviceSessionController extends Controller
         $user = Auth::user();
         $SESSION_COST = 7;
 
-        if ($user->balance < $SESSION_COST) {
-            return redirect()->back()->with('error', 'You need at least 7 EURO to start.');
+        if ($user->balance < 14) {
+            return redirect()->back()->with('error', 'You need at least 14 EURO to start. But it will cost you 7 per 30 minutes');
         }
 
         DB::transaction(function () use ($device, $user, $SESSION_COST) {

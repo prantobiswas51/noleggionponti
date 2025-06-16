@@ -47,17 +47,13 @@ Route::get('/device-status/{identifier}', function ($identifier) {
         return response()->json(['error' => 'Device not found'], 404);
     }
 
-    // Get the latest session for this device
-    $session = Esp32Session::where('esp32_device_id', $device->id)
-        ->latest('expires_at')
+    $activeSession = Esp32Session::where('esp32_device_id', $device->id)
+        ->where('active', true)
         ->first();
 
-    $active = $session && $session->expires_at && now()->lt($session->expires_at);
-
     return response()->json([
-        'device_time' => $session?->expires_at,
-        'now' => now(),
-        'has_enough' => $active,
+        'has_enough' => !!$activeSession,
+        'last_deducted_at' => optional($activeSession)->last_deducted_at,
     ]);
 });
 
