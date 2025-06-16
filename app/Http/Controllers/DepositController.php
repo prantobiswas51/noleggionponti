@@ -74,10 +74,10 @@ class DepositController extends Controller
             $payment->create($this->_api_context);
         } catch (\PayPal\Exception\PayPalConnectionException $ex) {
             if (Config::get('app.debug')) {
-                Session::put('error', 'Connection Timeout');
+                Session::flash('error', 'Connection Timeout');
                 return Redirect::route('deposit');
             } else {
-                Session::put('error', 'Something went wrong! Sorry for inconveninet');
+                Session::flash('error', 'Something went wrong! Sorry for inconveninet');
                 return Redirect::route('deposit');
             }
         }
@@ -95,7 +95,7 @@ class DepositController extends Controller
             return Redirect::away($redirect_url);
         }
 
-        Session::put('error', 'Unknow Error Occurred');
+        Session::flash('error', 'Unknow Error Occurred');
         return Redirect::route('deposit');
     }
 
@@ -107,7 +107,7 @@ class DepositController extends Controller
         $token = $request->query('token');
 
         if (empty($PayerID) || empty($token)) {
-            Session::put('error', 'Payment Failed');
+            Session::flash('error', 'Payment Failed');
             return redirect()->route('deposit');
         }
 
@@ -119,11 +119,13 @@ class DepositController extends Controller
             $result = $payment->execute($execution, $this->_api_context);
 
             if ($result->getState() === 'approved') {
-                Session::put('success', 'Payment successful!');
+                Session::flash('success', 'Payment successful!');
 
                 $total_amount = $result->transactions[0]->amount->total;
 
-                Auth::user()->increment('balance', $total_amount);
+                $user = User::find(Auth::id());
+                $user->balance += $total_amount;
+                $user->save();
 
                 \App\Models\Transaction::create([
                     'user_id' => Auth::id(),
@@ -140,11 +142,11 @@ class DepositController extends Controller
 
                 return view('deposit_success', compact('result'));
             } else {
-                Session::put('error', 'Payment not approved.');
+                Session::flash('error', 'Payment not approved.');
                 return redirect()->route('deposit');
             }
         } catch (\Exception $e) {
-            Session::put('error', 'Error processing payment: ' . $e->getMessage());
+            Session::flash('error', 'Error processing payment: ' . $e->getMessage());
             return redirect()->route('deposit');
         }
     }
