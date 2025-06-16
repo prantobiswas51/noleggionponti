@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     // handle esp32
     Route::get('/device-session', [DeviceSessionController::class, 'show'])->name('show_devices');
     Route::post('/device-session/start', [DeviceSessionController::class, 'start'])->name('start_devices');
+    Route::post('/device-session/stop', [DeviceSessionController::class, 'stop'])->name('stop_devices');
 
     // Deposit using paypal
     Route::get('/deposit', function () {

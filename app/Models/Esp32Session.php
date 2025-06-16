@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Esp32Session extends Model
 {
-    protected $fillable = ['esp32_device_id', 'started_at', 'expires_at', 'active'];
+    protected $fillable = ['esp32_device_id', 'started_at', 'last_deducted_at', 'expires_at', 'active'];
 
     public function device()
     {

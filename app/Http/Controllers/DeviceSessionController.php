@@ -19,50 +19,59 @@ class DeviceSessionController extends Controller
 
     public function start(Request $request)
     {
-        if(Auth::user()->balance < 14){
-            return redirect()->back()->with('error', 'You need to have at least 14 EURO!');
-        }
-
-        // Constants for amount and session duration
-        $SESSION_COST = 7;
-        $SESSION_DURATION_MINUTES = 2;
-
-        // Validate input
         $request->validate([
             'device' => 'required|string',
         ]);
 
-        // Find device
         $device = Esp32Device::where('identifier', $request->device)->first();
         if (!$device) {
             return redirect()->back()->with('error', 'Device not found.');
         }
 
         $user = Auth::user();
+        $SESSION_COST = 7;
 
         if ($user->balance < $SESSION_COST) {
-            return redirect()->back()->with('error', 'Insufficient balance.');
+            return redirect()->back()->with('error', 'You need at least 7 EURO to start.');
         }
 
-        DB::transaction(function () use ($device, $user, $SESSION_COST, $SESSION_DURATION_MINUTES) {
-            // Deactivate previous active sessions for this device
+        DB::transaction(function () use ($device, $user, $SESSION_COST) {
+            // End any previous session
             Esp32Session::where('esp32_device_id', $device->id)
                 ->where('active', true)
                 ->update(['active' => false]);
 
-            // Deduct balance and save
+            // Deduct first €7
             $user->balance -= $SESSION_COST;
             $user->save();
 
-            // Create new session
+            // Start session without end time
             Esp32Session::create([
                 'esp32_device_id' => $device->id,
                 'started_at' => now(),
-                'expires_at' => now()->addMinutes($SESSION_DURATION_MINUTES),
+                'last_deducted_at' => now(),
                 'active' => true,
             ]);
         });
 
-        return redirect()->back()->with('success', "Session started for {$SESSION_DURATION_MINUTES} minutes!");
+        return redirect()->back()->with('success', 'Session started. You will be charged €7 every 30 minutes.');
+    }
+
+
+    public function stop(Request $request)
+    {
+        $request->validate([
+            'device' => 'required|string',
+        ]);
+
+        $device = Esp32Device::where('identifier', $request->device)->first();
+
+        if ($device) {
+            Esp32Session::where('esp32_device_id', $device->id)
+                ->where('active', true)
+                ->update(['active' => false]);
+        }
+
+        return redirect()->back()->with('success', 'Session stopped.');
     }
 }
