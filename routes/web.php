@@ -36,7 +36,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/deposit/paypal', [DepositController::class, 'payWithPaypal'])->name('paypal_deposit');
     Route::get('/deposit/paypal/status', [DepositController::class, 'getPaypalPaymentStatus'])->name('deposit_status');
-    Route::get('/deposit/payeer/success', [DepositController::class, 'success'])->name('payeer_success');
 });
 
 
