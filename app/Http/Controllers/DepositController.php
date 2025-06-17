@@ -21,6 +21,8 @@ use PayPal\Auth\OAuthTokenCredential;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DepositController extends Controller
 {
@@ -32,7 +34,7 @@ class DepositController extends Controller
         // sandbox
         $clientId = 'ASHOHgX3ObKUiLPepgJwPCOwJUAKtilCzwLEfuldxH_pDZOOiR-oDNmU4Hfs7iArSF9yCX1RmLnrPPmd';
         $clientSecret = 'EGVhfmGDQjHD0jhNfYlYUFhvyxA53lqzi1unDlX4CEANuiMq_3-3-tu2LiqnlqRqplL5zdTl2lqfy4by';
-            
+
         // Create PayPal API Context
         $this->_api_context = new \PayPal\Rest\ApiContext(
             new \PayPal\Auth\OAuthTokenCredential($clientId, $clientSecret)
@@ -51,7 +53,13 @@ class DepositController extends Controller
     public function payWithPaypal(Request $request)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:1',
+            'amount' => [
+                'required',
+                'numeric',
+                'min:1',
+                'max:10000',
+                'regex:/^\d+(\.\d{1,2})?$/'
+            ],
         ]);
 
         $payer = new Payer();
@@ -73,13 +81,13 @@ class DepositController extends Controller
         try {
             $payment->create($this->_api_context);
         } catch (\PayPal\Exception\PayPalConnectionException $ex) {
-            if (Config::get('app.debug')) {
-                Session::flash('error', 'Connection Timeout');
-                return Redirect::route('deposit');
-            } else {
-                Session::flash('error', 'Something went wrong! Sorry for inconveninet');
-                return Redirect::route('deposit');
-            }
+            Log::error('PayPal Connection Error: ' . $ex->getMessage());
+            Session::flash('error', 'Unable to connect to payment service. Please try again later.');
+            return redirect()->route('deposit');
+        } catch (\Exception $e) {
+            Log::error('Payment Error: ' . $e->getMessage());
+            Session::flash('error', 'An unexpected error occurred. Please contact support.');
+            return redirect()->route('deposit');
         }
 
         foreach ($payment->getLinks() as $link) {
@@ -99,7 +107,6 @@ class DepositController extends Controller
         return Redirect::route('deposit');
     }
 
-    // paypal
     public function getPaypalPaymentStatus(Request $request)
     {
         $paymentId = $request->query('paymentId');
@@ -124,16 +131,18 @@ class DepositController extends Controller
                 $total_amount = $result->transactions[0]->amount->total;
 
                 $user = User::find(Auth::id());
-                $user->balance += $total_amount;
-                $user->save();
+                DB::transaction(function () use ($user, $total_amount, $result) {
+                    $user->balance += $total_amount;
+                    $user->save();
 
-                \App\Models\Transaction::create([
-                    'user_id' => Auth::id(),
-                    'method' => 'Paypal',
-                    'payer_email' => $result->payer->payer_info->email,
-                    'amount' => $total_amount,
-                    'status' => $result->state
-                ]);
+                    \App\Models\Transaction::create([
+                        'user_id' => Auth::id(),
+                        'method' => 'Paypal',
+                        'payer_email' => $result->payer->payer_info->email,
+                        'amount' => $total_amount,
+                        'status' => $result->state
+                    ]);
+                });
 
                 // Mail::raw('Your Transaction is Completed', function ($message) {
                 //     $message->to(Auth::user()->email)

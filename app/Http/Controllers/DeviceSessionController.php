@@ -54,7 +54,10 @@ class DeviceSessionController extends Controller
             ]);
         });
 
-        return redirect()->back()->with('success', 'Session started. You will be charged €7 every 30 minutes.');
+        return redirect()->back()->with([
+            'success' => 'Session started. You will be charged €7 every 30 minutes.',
+            'started_at' => now()->toIso8601String(),
+        ]);
     }
 
 
