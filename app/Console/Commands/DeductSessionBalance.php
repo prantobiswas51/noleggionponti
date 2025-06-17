@@ -28,7 +28,7 @@ class DeductSessionBalance extends Command
     public function handle()
     {
         $SESSION_COST = 7;
-        $INTERVAL_MINUTES = 10;
+        $INTERVAL_MINUTES = 1;
         $now = now();
 
         $sessions = Esp32Session::where('active', true)->get();

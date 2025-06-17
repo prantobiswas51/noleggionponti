@@ -24,32 +24,33 @@
         </div>
 
         @if(session('success'))
-            <p style="color: green">{{ session('success') }}</p>
+        <p style="color: green">{{ session('success') }}</p>
         @endif
 
-        @if(session('started_at'))
-            <div id="session-timer" class="text-xl font-bold text-gray-800 mt-4">
-                Session Time: <span id="timer">00:00</span>
-            </div>
+        @if($started_at)
+        <div id="session-timer" class="text-xl font-bold text-gray-800 mt-4">
+            Session Time: <span id="timer">00:00</span>
+        </div>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const timerElement = document.getElementById('timer');
-                    const start = new Date('{{ session('started_at') }}');
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+            const timerElement = document.getElementById('timer');
+            const start = new Date('{{ \Carbon\Carbon::parse($started_at)->toIso8601String() }}');
 
-                    function updateTimer() {
-                        const now = new Date();
-                        const diff = Math.floor((now - start) / 1000); // in seconds
-                        const mins = String(Math.floor(diff / 60)).padStart(2, '0');
-                        const secs = String(diff % 60).padStart(2, '0');
-                        timerElement.textContent = `${mins}:${secs}`;
-                    }
+            function updateTimer() {
+                const now = new Date();
+                const diff = Math.floor((now - start) / 1000);
+                const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+                const secs = String(diff % 60).padStart(2, '0');
+                timerElement.textContent = `${mins}:${secs}`;
+            }
 
-                    updateTimer(); // initial run
-                    setInterval(updateTimer, 1000); // update every second
-                });
-            </script>
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        });
+        </script>
         @endif
+
 
     </div>
 

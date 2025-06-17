@@ -14,7 +14,16 @@ class DeviceSessionController extends Controller
     public function show(Request $request)
     {
         $device = Esp32Device::where('identifier', $request->device)->firstOrFail();
-        return view('session', compact('device'));
+
+        $session = Esp32Session::where('esp32_device_id', $device->id)
+            ->where('user_id', Auth::id())
+            ->where('active', true)
+            ->first();
+
+        return view('session', [
+            'device' => $device,
+            'started_at' => $session?->started_at,
+        ]);
     }
 
     public function start(Request $request)
