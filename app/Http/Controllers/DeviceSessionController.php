@@ -24,6 +24,7 @@ class DeviceSessionController extends Controller
         ]);
 
         $device = Esp32Device::where('identifier', $request->device)->first();
+
         if (!$device) {
             return redirect()->back()->with('error', 'Device not found.');
         }
@@ -36,21 +37,23 @@ class DeviceSessionController extends Controller
         }
 
         DB::transaction(function () use ($device, $user, $SESSION_COST) {
-            // End any previous session
+            $now = now();
+
+            // End any active session for this device
             Esp32Session::where('esp32_device_id', $device->id)
                 ->where('active', true)
                 ->update(['active' => false]);
 
-            // Deduct first €7
-            $user->balance -= $SESSION_COST;
-            $user->save();
+            // Atomically deduct balance
+            $user->decrement('balance', $SESSION_COST);
 
-            // Start session without end time
+            // Start new session
             Esp32Session::create([
+                'user_id' => Auth::id(),
                 'esp32_device_id' => $device->id,
-                'started_at' => now(),
-                'last_deducted_at' => now(),
-                'active' => true,
+                'started_at'       => $now,
+                'last_deducted_at' => $now,
+                'active'           => true,
             ]);
         });
 
@@ -69,12 +72,21 @@ class DeviceSessionController extends Controller
 
         $device = Esp32Device::where('identifier', $request->device)->first();
 
-        if ($device) {
-            Esp32Session::where('esp32_device_id', $device->id)
-                ->where('active', true)
-                ->update(['active' => false]);
+        if (!$device) {
+            return redirect()->back()->with('error', 'Device not found.');
         }
 
-        return redirect()->back()->with('success', 'Session stopped.');
+        $updated = Esp32Session::where('esp32_device_id', $device->id)
+            ->where('active', true)
+            ->update([
+                'active' => false,
+                'expires_at' => now(), // Optional: mark when it was stopped
+            ]);
+
+        if ($updated) {
+            return redirect()->back()->with('success', 'Session stopped.');
+        }
+
+        return redirect()->back()->with('info', 'No active session found.');
     }
 }

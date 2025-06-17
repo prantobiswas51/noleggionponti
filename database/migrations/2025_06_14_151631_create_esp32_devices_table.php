@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('esp32_devices', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-    $table->string('identifier')->unique(); // For QR
+            $table->string('identifier')->unique(); // For QR
             $table->timestamps();
         });
     }

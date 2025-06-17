@@ -45,7 +45,7 @@ class DepositController extends Controller
             'mode' => 'sandbox',
             'http.ConnectionTimeOut' => 30,
             'log.LogEnabled' => true,
-            'log.FileName' => storage_path('logs/paypal.log'),
+            'log.FileName' => storage_path('logs/laravel.log'),
             'log.LogLevel' => 'ERROR',
         ]);
     }
