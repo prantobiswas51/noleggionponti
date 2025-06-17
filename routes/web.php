@@ -39,21 +39,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/device-status/{identifier}', function ($identifier) {
-    $device = Esp32Device::where('identifier', $identifier)->first();
 
-    if (!$device) {
-        return response()->json(['error' => 'Device not found'], 404);
-    }
-
-    $activeSession = Esp32Session::where('esp32_device_id', $device->id)
-        ->where('active', true)
-        ->first();
-
-    return response()->json([
-        'has_enough' => !!$activeSession,
-        'last_deducted_at' => optional($activeSession)->last_deducted_at,
-    ]);
-});
 
 require __DIR__ . '/auth.php';
