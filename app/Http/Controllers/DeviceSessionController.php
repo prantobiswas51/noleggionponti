@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Esp32Device;
 use App\Models\Esp32Session;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -20,9 +21,18 @@ class DeviceSessionController extends Controller
             ->where('active', true)
             ->first();
 
+        $isActive = Esp32Session::where('esp32_device_id',  $device->id)
+                            ->where('active', true)
+                            ->where(function ($query) {
+                                $query->whereNull('expires_at')
+                                      ->orWhere('expires_at', '>', Carbon::now());
+                            })->exists();
+
+
         return view('session', [
             'device' => $device,
             'started_at' => $session?->started_at,
+            'isActive' => $isActive,
         ]);
     }
 
@@ -39,9 +49,9 @@ class DeviceSessionController extends Controller
         }
 
         $user = Auth::user();
-        $SESSION_COST = 7;
+        $SESSION_COST = 7*100;
 
-        if ($user->balance < 14) {
+        if ($user->balance < 14*100) {
             return redirect()->back()->with('error', 'You need at least 14 EURO to start. But it will cost you 7 per 30 minutes');
         }
 
