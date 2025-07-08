@@ -15,6 +15,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/terms&conditions', function () {
+    return view('terms_and_conditions');
+})->name('terms');
+
+Route::get('/privacy_policy', function () {
+    return view('privacy_policy');
+})->name('privacy');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

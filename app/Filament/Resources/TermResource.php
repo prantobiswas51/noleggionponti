@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TransactionResource\Pages;
-use App\Filament\Resources\TransactionResource\RelationManagers;
-use App\Models\Transaction;
+use App\Filament\Resources\TermResource\Pages;
+use App\Filament\Resources\TermResource\RelationManagers;
+use App\Models\Term;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,23 +16,21 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class TransactionResource extends Resource
+class TermResource extends Resource
 {
-    protected static ?string $model = Transaction::class;
+    protected static ?string $model = Term::class;
 
-    protected static ?string $navigationIcon = 'heroicon-s-currency-euro';
+    protected static ?string $navigationIcon = 'heroicon-s-document-duplicate';
+    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationLabel = 'Terms and Conditions';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('id'),
-                TextInput::make('user_id'),
-                TextInput::make('method'),
-                TextInput::make('payer_email'),
-                TextInput::make('amount'),
-                TextInput::make('status'),
-            ]);
+                TextInput::make('version')->numeric()->inputMode('decimal'),
+                RichEditor::make('content'),
+            ])->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -39,11 +38,7 @@ class TransactionResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id'),
-                TextColumn::make('user_id'),
-                TextColumn::make('method'),
-                TextColumn::make('payer_email'),
-                TextColumn::make('amount'),
-                TextColumn::make('status'),
+                TextColumn::make('version')->searchable()
             ])
             ->filters([
                 //
@@ -68,9 +63,9 @@ class TransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTransactions::route('/'),
-            'create' => Pages\CreateTransaction::route('/create'),
-            'edit' => Pages\EditTransaction::route('/{record}/edit'),
+            'index' => Pages\ListTerms::route('/'),
+            'create' => Pages\CreateTerm::route('/create'),
+            'edit' => Pages\EditTerm::route('/{record}/edit'),
         ];
     }
 }

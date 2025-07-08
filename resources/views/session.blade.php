@@ -57,7 +57,10 @@
             </script>
         @endif
 
+    </div>
 
+    <div class="max-w-4xl p-4 bg-gray-200 mx-4 mt-6 rounded-lg flex flex-col lg:mx-auto">
+        By starting the session you agree to our terms and condition and privacy policy.
     </div>
 
 </x-app-layout>

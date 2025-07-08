@@ -4,31 +4,33 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Policy;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Models\Esp32Device;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\PolicyResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\Esp32DeviceResource\Pages;
-use App\Filament\Resources\Esp32DeviceResource\RelationManagers;
+use App\Filament\Resources\PolicyResource\RelationManagers;
 
-class Esp32DeviceResource extends Resource
+class PolicyResource extends Resource
 {
-    protected static ?string $model = Esp32Device::class;
-    protected static ?string $navigationIcon = 'heroicon-s-cpu-chip';
-    protected static ?string $navigationLabel = 'Devices';
+    protected static ?string $model = Policy::class;
+
+    protected static ?string $navigationIcon = 'heroicon-s-check-badge';
+    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationLabel = 'Privacy Policy';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('id'),
-                TextInput::make('name'),
-                TextInput::make('identifier'),
-            ]);
+                TextInput::make('version')->numeric()->inputMode('decimal'),
+                RichEditor::make('content'),
+            ])->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -36,8 +38,7 @@ class Esp32DeviceResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id'),
-                TextColumn::make('name'),
-                TextColumn::make('identifier'),
+                TextColumn::make('version')->searchable()
             ])
             ->filters([
                 //
@@ -62,9 +63,9 @@ class Esp32DeviceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListEsp32Devices::route('/'),
-            'create' => Pages\CreateEsp32Device::route('/create'),
-            'edit' => Pages\EditEsp32Device::route('/{record}/edit'),
+            'index' => Pages\ListPolicies::route('/'),
+            'create' => Pages\CreatePolicy::route('/create'),
+            'edit' => Pages\EditPolicy::route('/{record}/edit'),
         ];
     }
 }
