@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Esp32Device;
 use App\Models\Esp32Session;
+use App\Models\Policy;
+use App\Models\Term;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -22,11 +24,11 @@ class DeviceSessionController extends Controller
             ->first();
 
         $isActive = Esp32Session::where('esp32_device_id',  $device->id)
-                            ->where('active', true)
-                            ->where(function ($query) {
-                                $query->whereNull('expires_at')
-                                      ->orWhere('expires_at', '>', Carbon::now());
-                            })->exists();
+            ->where('active', true)
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', Carbon::now());
+            })->exists();
 
 
         return view('session', [
@@ -49,9 +51,9 @@ class DeviceSessionController extends Controller
         }
 
         $user = Auth::user();
-        $SESSION_COST = 7*100;
+        $SESSION_COST = 7 * 100;
 
-        if ($user->balance < 14*100) {
+        if ($user->balance < 14 * 100) {
             return redirect()->back()->with('error', 'You need at least 14 EURO to start. But it will cost you 7 per 30 minutes');
         }
 
@@ -82,7 +84,6 @@ class DeviceSessionController extends Controller
         ]);
     }
 
-
     public function stop(Request $request)
     {
         $request->validate([
@@ -107,5 +108,31 @@ class DeviceSessionController extends Controller
         }
 
         return redirect()->back()->with('info', 'No active session found.');
+    }
+
+    public function accept_contract(Request $request)
+    {
+        $userIp = $request->ip();
+        $user = Auth::user();
+        $user->acceptance_ip = $userIp;
+        $user->acceptance_time = now();
+
+        // Get the latest policy and term versions
+        $current_policy_version = Policy::latest()->first();  // Retrieve the most recent policy version
+        $current_term_version = Term::latest()->first();  // Retrieve the most recent term version
+
+        // Assign the latest policy and term versions to the user
+        $user->policy_version = $current_policy_version ? $current_policy_version->version : null;
+        $user->terms_version = $current_term_version ? $current_term_version->version : null; // Assuming the 'version' column exists
+
+        if ($request->marketing == "true") {
+            $user->marketing = true;
+        } else {
+            $user->marketing = false;
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('error', 'Contract accepted!');
     }
 }

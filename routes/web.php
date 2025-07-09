@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Models\User;
 use App\Models\Esp32Device;
 use Illuminate\Support\Facades\Log;
@@ -15,13 +16,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/terms&conditions', function () {
-    return view('terms_and_conditions');
-})->name('terms');
-
-Route::get('/privacy_policy', function () {
-    return view('privacy_policy');
-})->name('privacy');
+Route::get('/terms_conditions', [DashboardController::class, 'terms'])->name('terms');
+Route::get('/privacy_policy', [DashboardController::class, 'policy'])->name('privacy');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -33,9 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // handle esp32
-    Route::get('/device-session', [DeviceSessionController::class, 'show'])->name('show_devices');
-    Route::post('/device-session/start', [DeviceSessionController::class, 'start'])->name('start_devices');
-    Route::post('/device-session/stop', [DeviceSessionController::class, 'stop'])->name('stop_devices');
+    Route::get('/device_session', [DeviceSessionController::class, 'show'])->name('show_devices');
+    Route::post('/device_session/start', [DeviceSessionController::class, 'start'])->name('start_devices');
+    Route::post('/device_session/stop', [DeviceSessionController::class, 'stop'])->name('stop_devices');
+
+    Route::post('/device_session/accept_contract', [DeviceSessionController::class, 'accept_contract'])->name('accept_contract');
 
     // Deposit using paypal
     Route::get('/deposit', function () {
