@@ -18,7 +18,20 @@
 
 <body class="font-sans antialiased">
     <div class="min-h-screen ">
-        @include('layouts.navigation')
+        
+        @auth
+            @include('layouts.navigation')
+        @else
+            <div class="p-6  bg-black text-white">
+                <div class="mx-auto max-w-7xl flex justify-between">
+                    <div class="">{{ config('app.name', 'Laravel') }}</div>
+                    <div class="gap-3 flex">
+                        <a href="{{ route('login') }}">Login</a>
+                        <a href="{{ route('register') }}">Register</a>
+                    </div>
+                </div>
+            </div>
+        @endauth
 
         @if(session('error'))
         <div class="fixed top-[100px] left-1/2 transform -translate-x-1/2 z-50">
