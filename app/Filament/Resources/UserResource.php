@@ -28,7 +28,7 @@ class UserResource extends Resource
                 TextInput::make('name'),
                 TextInput::make('surname'),
                 TextInput::make('email'),
-                TextInput::make('balance'),
+                TextInput::make('balance')->integer(),
             ]);
     }
 
