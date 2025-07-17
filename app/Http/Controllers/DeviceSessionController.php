@@ -51,9 +51,9 @@ class DeviceSessionController extends Controller
         }
 
         $user = Auth::user();
-        $SESSION_COST = 7 * 100;
+        $SESSION_COST = 7;
 
-        if ($user->balance < 14 * 100) {
+        if ($user->balance < 14) {
             return redirect()->back()->with('error', 'You need at least 14 EURO to start. But it will cost you 7 per 30 minutes');
         }
 

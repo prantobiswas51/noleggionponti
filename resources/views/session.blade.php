@@ -3,7 +3,7 @@
     <div class="max-w-4xl p-4 bg-gray-200 mx-4 mt-6 rounded-lg flex flex-col lg:mx-auto">
 
         <div class="py-2 text-purple-600 font-semibold text-2xl">
-            € {{ Auth::user()->balance / 100 }}
+            € {{ Auth::user()->balance }}
         </div>
 
         <h1 class="my-2">Device: {{ $device->name }}</h1>

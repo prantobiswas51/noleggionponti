@@ -3,7 +3,7 @@
     <div class="max-w-4xl p-4 bg-gray-200 mx-4 mt-6 rounded-lg flex items-center justify-between lg:mx-auto">
         <div class="">
             <p class=" font-medium">Your Balance</p>
-            <p class="text-2xl font-bold text-green-500">€ {{ Auth::user()->balance/100 }}</p>
+            <p class="text-2xl font-bold text-green-500">€ {{ Auth::user()->balance }}</p>
         </div>
         <div class="">
             <button class="px-6 py-2 bg-blue-600 text-white rounded-lg"><a href="{{ route('deposit') }}">+ Deposit</a></button>

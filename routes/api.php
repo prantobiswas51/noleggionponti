@@ -29,9 +29,9 @@ Route::get('/device-status/{identifier}', function ($identifier) {
         if ($lastDeducted->diffInMinutes($now) >= 1) {
             $user = $activeSession->user; // assuming you have relation: Esp32Session belongsTo User
 
-            if ($user->balance >= 7*100) {
+            if ($user->balance >= 7) {
                 DB::transaction(function () use ($user, $activeSession, $now) {
-                    $user->balance -= 7*100;
+                    $user->balance -= 7;
                     $user->save();
 
                     $activeSession->last_deducted_at = $now;

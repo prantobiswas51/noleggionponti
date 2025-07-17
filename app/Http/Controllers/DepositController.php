@@ -134,7 +134,7 @@ class DepositController extends Controller
 
                 DB::transaction(function () use ($user, $total_amount, $result) {
                     
-                    $user->balance += $total_amount*100;
+                    $user->balance += $total_amount;
                     $user->save();
 
                     \App\Models\Transaction::create([

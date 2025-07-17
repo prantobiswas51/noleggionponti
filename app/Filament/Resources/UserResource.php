@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
+use Filament\Forms\Components\TextInput;
 
 class UserResource extends Resource
 {
@@ -24,7 +25,10 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name'),
+                TextInput::make('surname'),
+                TextInput::make('email'),
+                TextInput::make('balance'),
             ]);
     }
 
@@ -32,12 +36,13 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id'),
-                TextColumn::make('name'),
-                TextColumn::make('email'),
+                TextColumn::make('id')->searchable(),
+                TextColumn::make('name')->searchable(),
+                TextColumn::make('surname')->searchable(),
+                TextColumn::make('email')->searchable(),
                 TextColumn::make('balance'),
                 TextColumn::make('email_verified_at'),
-                
+
             ])
             ->filters([
                 //
